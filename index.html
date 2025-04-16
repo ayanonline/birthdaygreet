@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday My Love ❤️</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="./file/default.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="particles-js" id="particles-js"></div>
+    
+    <div id="main">
+        <audio id="myAudio" preload="auto" loop>
+            <source src="aud.mp3" type="audio/mp3">
+        </audio>
+
+        <div class="content-wrapper">
+            <div id="initial-screen" class="screen active">
+                <div class="heart-button" onclick="startCelebration()">
+                    <div class="heart-icon">❤️</div>
+                    <div class="pulse"></div>
+                    <div class="text">Click to Begin</div>
+                </div>
+            </div>
+
+            <div id="celebration-screen" class="screen">
+                <div id="text">
+                    <div id="code" class="message-container">
+                        <span class="say animate__animated">My Love 💞</span>
+                        <span class="say animate__animated">Happy Birthday 🎈</span>
+                        <span class="say animate__animated">May God bless you 🍀</span>
+                        <span class="say animate__animated">And give you many happiness 💕</span>
+                        <span class="say animate__animated">I loved you ❤️</span>
+                        <span class="say animate__animated">And I will always love you 🥺 ❤️</span>
+                        <span class="say animate__animated">Hope you have a great day today ❤️😘</span>
+                    </div>
+                </div>
+
+                <div id="clock-box">
+                    <div class="clock-label">Time spent together:</div>
+                    <div id="clock"></div>
+                </div>
+
+                <canvas id="canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script src="./file/love.js"></script>
+    <script>
+        let audio;
+        let animationStarted = false;
+        let tree;
+
+        window.onload = function() {
+            audio = document.getElementById("myAudio");
+            initParticles();
+            setupEventListeners();
+        };
+
+        function setupEventListeners() {
+            document.querySelector('.heart-button').addEventListener('click', startCelebration);
+            document.addEventListener('click', function() {
+                if (audio && audio.paused) {
+                    playAudio();
+                }
+            });
+        }
+
+        function initParticles() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ff6b6b" },
+                    shape: { type: "heart" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 5, random: true },
+                    move: {
+                        enable: true,
+                        speed: 3,
+                        direction: "none",
+                        random: true,
+                        out_mode: "out"
+                    }
+                }
+            });
+        }
+
+        function startCelebration(event) {
+            if (event) {
+                event.preventDefault();
+            }
+            
+            if (!animationStarted) {
+                animationStarted = true;
+                
+                // Fade out initial screen
+                const initialScreen = document.getElementById('initial-screen');
+                initialScreen.style.opacity = '0';
+                initialScreen.style.pointerEvents = 'none';
+                
+                // Show celebration screen with fade in
+                const celebrationScreen = document.getElementById('celebration-screen');
+                celebrationScreen.classList.add('active');
+                celebrationScreen.style.opacity = '1';
+                
+                playAudio();
+                startAnimations();
+                
+                // Initialize tree animation
+                const canvas = document.getElementById('canvas');
+                const width = window.innerWidth;
+                const height = window.innerHeight;
+                
+                canvas.width = width;
+                canvas.height = height;
+                
+                if (!tree) {
+                    tree = new Tree(canvas, width, height, {
+                        seed: {
+                            x: width / 2,
+                            y: height / 2,
+                            color: "#FF0000",
+                            scale: 1
+                        }
+                    });
+                }
+                
+                runAsync().start();
+            }
+        }
+
+        function playAudio() {
+            if (audio) {
+                const playPromise = audio.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(function(error) {
+                        console.log("Audio play failed:", error);
+                    });
+                }
+            }
+        }
+
+        function startAnimations() {
+            const messages = document.querySelectorAll('.say');
+            messages.forEach((msg, index) => {
+                setTimeout(() => {
+                    msg.style.opacity = '0';
+                    msg.classList.add('animate__fadeInUp');
+                    msg.style.opacity = '1';
+                }, index * 1000);
+            });
+
+            setInterval(updateClock, 1000);
+            updateClock();
+        }
+
+        function updateClock() {
+            const startDate = new Date(2025, 0, 1);
+            const now = new Date();
+            const diff = now - startDate;
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            document.getElementById('clock').innerHTML = 
+                `<div class="time-unit"><span>${days}</span><label>days</label></div>
+                 <div class="time-unit"><span>${hours}</span><label>hours</label></div>
+                 <div class="time-unit"><span>${minutes}</span><label>minutes</label></div>
+                 <div class="time-unit"><span>${seconds}</span><label>seconds</label></div>`;
+        }
+    </script>
+</body>
+</html>
